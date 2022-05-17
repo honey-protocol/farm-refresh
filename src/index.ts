@@ -1,20 +1,31 @@
+const fs = require("fs");
 import { GEM_FARM_PROG_ID } from "@gemworks/gem-farm-ts";
 import { GemFarm } from "@gemworks/gem-farm-ts/dist/types/gem_farm";
 import {
   clusterApiUrl,
   Connection,
+  ConnectionConfig,
   PublicKey,
   Transaction,
 } from "@solana/web3.js";
 import * as anchor from "@project-serum/anchor";
 import farmIdl from "./idl.json";
+import config from "../config"
 
-/// TODO: set refreshPayer with your keypair already funded.
-const refreshPayer = anchor.web3.Keypair.generate();
-
-const FARM_ADDRESS = new PublicKey(
-  "1G72FGcqtc3ZbC8guy87rMB7MSeEpce7FDgW3es8RdY"
+const refreshPayer = anchor.web3.Keypair.fromSecretKey(
+  Uint8Array.from(
+    JSON.parse(
+      fs.readFileSync(
+        config.PAYER_WALLET_PATH,
+        "utf8"
+      )
+    )
+  )
 );
+
+const FARM_ADDRESS = new PublicKey(config.FARM_ADDRESS);
+
+const RPC_URL = config.RPC_URL;
 
 const fetchAllFarmerPDAs = async (farm: PublicKey) => {
   const farmProgram = getFarmProgram();
@@ -44,15 +55,29 @@ const getFarmProgram = () => {
   );
 };
 
-const getWallet = () => {
-  const connection = new Connection(clusterApiUrl("mainnet-beta"), "confirmed");
-  const wallet = refreshPayer;
+const ConnectionConfigOb: ConnectionConfig = {
+  commitment: "confirmed",
+  confirmTransactionInitialTimeout: 120000,
+};
 
+const getWallet = () => {
+  const connection = new Connection(RPC_URL, ConnectionConfigOb);
+  const wallet = refreshPayer;
   return { connection, wallet };
 };
 
 const createTransactions = async () => {
   const accounts = await fetchAllFarmerPDAs(FARM_ADDRESS);
+
+  // write to a new file named out.txt
+  fs.writeFile("./output.json", JSON.stringify(accounts), (err: any) => {
+    // throws an error, you could also catch it here
+    if (err) throw err;
+
+    // success case, the file was saved
+    console.log("Accounts saved!");
+  });
+
   const farmProgram = getFarmProgram();
 
   const transactions = [];
@@ -121,7 +146,7 @@ const sendAndConfirmTransactionsWithRetry = async (
     let transaction = transactions[currentIndex];
     let signed = null;
     try {
-      const { blockhash } = await connection.getRecentBlockhash();
+      const { blockhash } = await connection.getLatestBlockhash();
       transaction.recentBlockhash = blockhash;
       transaction.feePayer = wallet.publicKey;
     } catch (e) {

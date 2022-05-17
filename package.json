@@ -15,6 +15,9 @@
   "dependencies": {
     "@gemworks/gem-farm-ts": "^0.22.11",
     "@project-serum/anchor": "^0.22.0",
-    "@solana/web3.js": "^1.39.1"
+    "@solana/web3.js": "^1.39.1",
+    "@types/node": "^17.0.33",
+    "dotenv": "^16.0.1",
+    "path": "^0.12.7"
   }
 }
