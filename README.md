@@ -1,4 +1,4 @@
-# Farm refresh - A script for crancking gem-farm 
+# Farm refresh - A script for cranking gem-farm 
 
 ## Tooling required
 
@@ -60,4 +60,10 @@ PAYER_WALLET_PATH='ADD_PATH_TO_PAYER_PRIVATE_KEY.json'
 ### Running the script
 ```bash
 ts-node src/index.ts
+```
+
+or 
+
+```bash
+yarn start
 ```
