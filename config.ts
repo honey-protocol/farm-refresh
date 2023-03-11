@@ -25,7 +25,7 @@ interface Config {
 const getConfig = (): ENV => {
   return {
     RPC_URL: process.env.RPC_URL,
-    FARM_ADDRESS: process.env.FARM_ADDRESS ,
+    FARM_ADDRESS: process.env.FARM_ADDRESS,
     PAYER_WALLET_PATH: process.env.PAYER_WALLET_PATH
   };
 };

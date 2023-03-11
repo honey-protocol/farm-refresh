@@ -70,7 +70,7 @@ const createTransactions = async () => {
   const accounts = await fetchAllFarmerPDAs(FARM_ADDRESS);
 
   // write to a new file named out.txt
-  fs.writeFile("./output.json", JSON.stringify(accounts), (err: any) => {
+  fs.writeFile("./data.json", JSON.stringify(accounts), (err: any) => {
     // throws an error, you could also catch it here
     if (err) throw err;
 
